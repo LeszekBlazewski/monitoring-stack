@@ -1,0 +1,12 @@
+---
+# tasks file for docker-setup
+
+- name: Get uptime information
+  shell: /usr/bin/uptime
+  register: result
+
+- name: Display debug message
+  debug:
+    msg:
+      - "Uptime for machine is {{ result.stdout }}."
+  changed_when: false
