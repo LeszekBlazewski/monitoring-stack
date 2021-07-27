@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: Leszk Blazewski
   description: Install monitoring stack based on prometheus, grafana, loki running in docker
