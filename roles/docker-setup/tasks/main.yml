@@ -4,6 +4,7 @@
 - name: Get uptime information
   shell: /usr/bin/uptime
   register: result
+  changed_when: false
 
 - name: Display debug message
   debug:
