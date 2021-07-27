@@ -39,7 +39,6 @@ jobs:
         distro:
           - rockylinux8
           - ubuntu2004
-          - ubuntu1804
           - debian10
 
     steps:
@@ -58,6 +57,7 @@ jobs:
 
       - name: Run Molecule tests.
         run: molecule test
+        working-directory: roles/docker-setup
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
