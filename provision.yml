@@ -2,16 +2,22 @@
 - hosts: all
 
   pre_tasks:
-    - name: Update apt cache if needed.
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
-      when: ansible_os_family == "Debian"
-
-    - name: Update yum cache if needed.
-      yum: update_cache=yes
-      when: ansible_os_family == "RedHat"
+    - name: Import common pre tasks.
+      import_tasks: "common/pre_tasks.yml"
 
   roles:
+    - geerlingguy.security
     - geerlingguy.firewall
     - geerlingguy.docker
+
+- hosts: central_node
+
+  pre_tasks:
+    - name: Import common pre tasks.
+      import_tasks: "common/pre_tasks.yml"
+
+- hosts: worker_nodes
+
+  pre_tasks:
+    - name: Import common pre tasks.
+      import_tasks: "common/pre_tasks.yml"
