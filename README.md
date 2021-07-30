@@ -54,3 +54,13 @@ docker exec --tty [container_id] \
 env TERM=xterm ansible-playbook \
 /testing/playbook.yml
 ```
+
+## Run ansible against local docker containers(containers as ansible hosts)
+
+For example for container started with `--name=mycontainer` (or just few letters of container id)
+
+_Note the comma at the end!_
+
+```bash
+ansible all -i 'mycontainer,' -c docker -m ping
+```
