@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  become: true
 
   pre_tasks:
     - name: Import common pre tasks.
@@ -11,6 +12,7 @@
     - geerlingguy.docker
 
 - hosts: central_node
+  become: true
 
   pre_tasks:
     - name: Import common pre tasks.

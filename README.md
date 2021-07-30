@@ -38,3 +38,19 @@ Based on: https://github.com/stefanprodan/dockprom extended with Loki, wrapped w
 2. After finish, create terraform templates to provision basic ubuntu20.4, debian10 and rocky8 machines where ubuntu20.4 will be the central_node and other workers, which will be provisioned by ansible. + create template for route 53 with adequate DNS records for the machines. Will terragrunt be needed?
 
 3. Port the stack to kubernetes. Drop ansible and docker-compose and focus on helm charts which will allow replication of same services. What about cluster provisioning? (EKS, also terraform?). What about updates/gitops -> argocd?
+
+## Docker container running systemd on host systemd version 248+ (for testing ansible roles which modify systemd services)
+
+```bash
+docker run --detach --privileged \
+--volume=/sys/fs/cgroup:/sys/fs/cgroup \
+--volume=`pwd`:/testing \
+--cgroupns=host \
+geerlingguy/docker-rockylinux8-ansible
+```
+
+```bash
+docker exec --tty [container_id] \
+env TERM=xterm ansible-playbook \
+/testing/playbook.yml
+```

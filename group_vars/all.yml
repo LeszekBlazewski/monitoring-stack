@@ -1,0 +1,15 @@
+---
+# Ansible connection variables
+ansible_ssh_private_key_file: "/home/beard/.ssh/master-key.pem"
+
+# Firewall role variables
+firewall_allowed_tcp_ports:
+  - "22"
+  - "80"
+  - "443"
+firewall_disable_firewalld: true
+firewall_disable_ufw: true
+
+# Docker role variables
+docker_compose_version: "1.29.2"
+docker_users: ["{{ ansible_user }}"]
