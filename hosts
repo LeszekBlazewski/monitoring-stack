@@ -1,7 +1,6 @@
 central_node ansible_host=1.2.3.4
 
 [worker_nodes]
-central_node
 worker_node_1
 worker_node_2
 

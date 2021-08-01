@@ -1,0 +1,131 @@
+version: "3.8"
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - caddy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./caddy/Caddyfile:/Caddyfile
+      - caddy_data:/data
+    environment:
+      - CADDY_DOCKER_CADDYFILE_PATH=/Caddyfile
+      - CADDY_INGRESS_NETWORKS=caddy
+    restart: unless-stopped
+    labels:
+      org.label-schema.group: "monitoring"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: prometheus.localhost
+      caddy.reverse_proxy: "{{upstreams 9090}}"
+      org.label-schema.group: "monitoring"
+
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: alertmanager.localhost
+      caddy.reverse_proxy: "{{upstreams 9093}}"
+      org.label-schema.group: "monitoring"
+
+  pushgateway:
+    image: prom/pushgateway
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: pushgateway.localhost
+      caddy.reverse_proxy: "{{upstreams 9091}}"
+      org.label-schema.group: "monitoring"
+
+  nodeexporter:
+    image: prom/node-exporter
+    volumes:
+      - "/:/rootfs:ro,rslave"
+    command:
+      - "--path.rootfs=/rootfs"
+      - "--no-collector.rapl"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      org.label-schema.group: "monitoring"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      org.label-schema.group: "monitoring"
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://grafana.localhost
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: grafana.localhost
+      caddy.reverse_proxy: "{{upstreams 3000}}"
+      org.label-schema.group: "monitoring"
+
+  loki:
+    image: grafana/loki
+    volumes:
+      - ./loki/config.yml:/etc/loki/local-config.yaml
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: loki.localhost
+      caddy.reverse_proxy: "{{upstreams 3100}}"
+      org.label-schema.group: "monitoring"
+
+networks:
+  caddy:
+    name: caddy
+
+volumes:
+  caddy_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
