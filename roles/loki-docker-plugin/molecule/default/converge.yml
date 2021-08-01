@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include loki-docker-plugin"
+      include_role:
+        name: "loki-docker-plugin"

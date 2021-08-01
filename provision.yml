@@ -21,6 +21,12 @@
   roles:
     - central-node
 
+  tasks:
+    - name: Install loki plugin if monitoring on node enabled.
+      include_role:
+        name: loki-docker-plugin
+      when: gather_logs_on_node
+
 - hosts: worker_nodes
 
   pre_tasks:
