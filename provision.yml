@@ -18,8 +18,14 @@
     - name: Import common pre tasks.
       import_tasks: "common/pre_tasks.yml"
 
+  roles:
+    - central-node
+
 - hosts: worker_nodes
 
   pre_tasks:
     - name: Import common pre tasks.
       import_tasks: "common/pre_tasks.yml"
+
+  roles:
+    - worker-node

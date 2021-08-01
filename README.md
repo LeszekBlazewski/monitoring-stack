@@ -24,9 +24,11 @@ Based on: https://github.com/stefanprodan/dockprom extended with Loki, wrapped w
 
 [x] Docker installation (based on geerlingguy role)
 
-4. Write full docker-compose file based on https://github.com/stefanprodan/dockprom (check documentation for upgrades, and how this should be started) + add Loki to the compose file. Everything should be running inside one docker network. (What about nodeexporter?)
+[X] 4. Write full docker-compose file based on https://github.com/stefanprodan/dockprom (check documentation for upgrades, and how this should be started) + add Loki to the compose file. Everything should be running inside one docker network. (What about nodeexporter?)
 
-5. Create ansible role (central_node) which will edit necessary configs and start services from docker-compose required to run the monitoring infrastructure. Required services should be exposed to outside via caddy on TLS on different paths for example /prometheus /grafana /loki etc.
+5. Create ansible role (central_node) which will edit necessary configs and start services from docker-compose required to run the monitoring infrastructure. Required services should be exposed to outside via caddy on TLS on different subdomains. Also a parameter should specify whether central node will be used as a worker node (should install loki plugin on it) -> The loki plugin installation can be done as a separate role and then included in central node and worker nodes.
+
+Current setup for proxy will work only if the ansbile target host has domain setup. What to do if someone does not has a domain and operates only by ip? We switch to ports in docker compose
 
 6. Create ansible role(worker_node) which will edit necessary configs and start services from docker-compose required to expose and ship logs to the worker_node (docker loki plugin, cAdvisor, nodeExporter, caddy). -> only port 80 and 443 should be exposed with caddy, and needed services should be available via paths like /cadvisor /nodeexporter etc. This role if has loki enable should also use variable loki_url to set it inside docker daemon.json. (maybe a check for loki url might be needed, to make sure the central_node is available and listening for logs)
 

@@ -1,4 +1,1 @@
 # Caddyfile for services not stricly running in Docker, or extending caddy configuration
-localhost {
-    respond / "Hello World" 200
-}
