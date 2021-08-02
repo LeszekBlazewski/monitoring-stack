@@ -5,7 +5,11 @@ driver:
   name: docker
 platforms:
   - name: instance
-    image: docker.io/pycontribs/centos:8
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian10}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    privileged: true
     pre_build_image: true
 provisioner:
   name: ansible

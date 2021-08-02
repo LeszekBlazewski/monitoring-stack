@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: central_node
   become: true
 
   pre_tasks:
@@ -11,27 +11,12 @@
     - geerlingguy.firewall
     - geerlingguy.docker
 
-- hosts: central_node
-  become: true
-
-  pre_tasks:
-    - name: Import common pre tasks.
-      import_tasks: "common/pre_tasks.yml"
-
-  roles:
-    - central-node
-
   tasks:
     - name: Install loki plugin if monitoring on node enabled.
       include_role:
         name: loki-docker-plugin
       when: gather_logs_on_node
 
-- hosts: worker_nodes
-
-  pre_tasks:
-    - name: Import common pre tasks.
-      import_tasks: "common/pre_tasks.yml"
-
-  roles:
-    - worker-node
+    - name: Provision monitoring services.
+      import_role:
+        name: central-node

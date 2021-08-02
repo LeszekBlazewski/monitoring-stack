@@ -115,6 +115,8 @@ services:
     restart: unless-stopped
     networks:
       - caddy
+    ports:
+      - 3100:3100 # used for localhost to allow docker loki plugin to push logs
     labels:
       caddy: loki.localhost
       caddy.reverse_proxy: "{{upstreams 3100}}"

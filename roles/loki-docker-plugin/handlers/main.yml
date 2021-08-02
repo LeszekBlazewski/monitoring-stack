@@ -1,2 +1,5 @@
 ---
 # handlers file for loki-docker-plugin
+- name: restart docker
+  service: "name=docker state=restarted"
+  when: ansible_facts.services['docker']['state'] == 'running'

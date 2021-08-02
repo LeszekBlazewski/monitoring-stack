@@ -3,3 +3,4 @@
 *.pyc
 .cache
 roles/geerlingguy*
+collections

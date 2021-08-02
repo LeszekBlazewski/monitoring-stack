@@ -1,2 +1,48 @@
 ---
 # tasks file for loki-docker-plugin
+- name: "Verify that loki_url is set."
+  assert:
+    that:
+      - "{{ loki_url }} is defined"
+      - "{{ loki_url }} | length > 0"
+      - "{{ loki_url }} != None"
+    fail_msg: "{{ loki_url }} needs to be set for the role to work"
+    success_msg: "Required variable {{ loki_url }} is defined"
+
+- name: "Check if loki endopoint is available."
+  uri:
+    url: "{{ loki_url }}"
+    return_content: yes
+  register: response
+  failed_when: "'ready' not in response.content"
+
+- name: Ensure /etc/docker/ directory exists.
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+
+- name: Get current docker daemon config.
+  slurp:
+    src: /etc/docker/daemon.json
+    register: docker_config
+
+- name: Append loki plugin configuration.
+  copy:
+    content: "{{ docker_config.content|b64decode|from_json | default([]) | combine( daemon_options | to_nice_json) }}"
+    dest: /etc/docker/daemon.json
+    mode: 0644
+  notify: restart docker
+
+- name: Install loki docker plugin.
+  community.docker.docker_plugin:
+    plugin_name: "grafana/loki-docker-driver:latest"
+    state: "present"
+    alias: "loki"
+  notify: restart docker
+
+- name: Enable loki docker plugin.
+  community.docker.docker_plugin:
+    plugin_name: "loki"
+    state: "enable"
+  notify: restart docker

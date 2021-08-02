@@ -24,7 +24,7 @@ Based on: https://github.com/stefanprodan/dockprom extended with Loki, wrapped w
 
 [x] Docker installation (based on geerlingguy role)
 
-[X] 4. Write full docker-compose file based on https://github.com/stefanprodan/dockprom (check documentation for upgrades, and how this should be started) + add Loki to the compose file. Everything should be running inside one docker network. (What about nodeexporter?)
+[X] 4. Write full docker-compose file based on https://github.com/stefanprodan/dockprom (check documentation for upgrades, and how this should be started) + add Loki to the compose file. Everything should be running inside one docker network.
 
 5. Create ansible role (central_node) which will edit necessary configs and start services from docker-compose required to run the monitoring infrastructure. Required services should be exposed to outside via caddy on TLS on different subdomains. Also a parameter should specify whether central node will be used as a worker node (should install loki plugin on it) -> The loki plugin installation can be done as a separate role and then included in central node and worker nodes.
 
@@ -49,6 +49,16 @@ Current setup for proxy will work only if the ansbile target host has domain set
 4. Add sample rules for logs in loki (send to alertmanager)
 
 ## Docker container running systemd on host systemd version 248+ (for testing ansible roles which modify systemd services)
+
+### In order to make the --cgroupns=host default, specify following options in `/etc/docker/daemon.json`
+
+```json
+{
+  "default-cgroupns-mode": "host"
+}
+```
+
+In such case you can drop the --cgroupns=host flag.
 
 ```bash
 docker run --detach --privileged \

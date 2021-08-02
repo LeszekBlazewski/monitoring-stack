@@ -1,0 +1,14 @@
+---
+- hosts: worker_nodes
+  become: true
+
+  pre_tasks:
+    - name: Import common pre tasks.
+      import_tasks: "common/pre_tasks.yml"
+
+  roles:
+    - geerlingguy.security
+    - geerlingguy.firewall
+    - geerlingguy.docker
+    - loki-docker-plugin
+    - worker-node

@@ -3,3 +3,6 @@ roles:
   - name: geerlingguy.security
   - name: geerlingguy.firewall
   - name: geerlingguy.docker
+
+collections:
+  - name: community.docker
