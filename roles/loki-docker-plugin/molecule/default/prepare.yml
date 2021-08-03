@@ -1,0 +1,19 @@
+---
+- name: Prepare additional docker containers.
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - community.docker
+  tasks:
+    - name: Run loki container.
+      docker_container:
+        name: "loki"
+        image: "grafana/loki"
+        state: started
+        recreate: false
+        networks:
+          - name: loki-plugin-test
+        volumes:
+          - ../../files/:/mnt/config
+        command: "-config.file=/mnt/config/loki-config.yaml"

@@ -3,7 +3,7 @@
   become: true
 
   pre_tasks:
-    - name: Import common pre tasks.
+    - name: Update packages cache.
       import_tasks: "common/pre_tasks.yml"
 
   roles:

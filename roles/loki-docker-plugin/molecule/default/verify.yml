@@ -3,8 +3,48 @@
 
 - name: Verify
   hosts: all
-  gather_facts: false
+  collections:
+    - community.docker
+  vars:
+    loki_url: "http://loki:3100"
+    default_role_daemon_options:
+      log-driver: "loki"
+      log-opts:
+        loki-url: "{{ loki_url }}"
+        loki-batch-size: "400"
+        mode: "non-blocking"
+        max-buffer-size: "4m"
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+    - name: Get docker dameon.json stats.
+      stat:
+        path: /etc/docker/daemon.json
+      register: stat_result
+
+    - name: Assert that dameon.json exists.
+      assert:
+        that:
+          - stat_result.stat.exists
+
+    - name: Get current docker daemon config.
+      slurp:
+        src: /etc/docker/daemon.json
+      register: docker_config
+
+    - name: Validate docker daemon config.
+      assert:
+        that:
+          - "{{ docker_config.content|b64decode|from_json }} == {{ default_role_daemon_options }}"
+
+    - name: Check if loki plugin is installed.
+      docker_plugin:
+        plugin_name: "loki"
+        state: "preset"
+      register: docker_plugin_present
+      failed_when: docker_plugin_present.changed
+
+    - name: Check if loki plugin is enabled.
+      docker_plugin:
+        plugin_name: "loki"
+        state: "enable"
+      register: docker_plugin_enable
+      failed_when: docker_plugin_enable.changed

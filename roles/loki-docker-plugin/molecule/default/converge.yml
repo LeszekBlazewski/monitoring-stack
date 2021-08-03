@@ -1,7 +1,23 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    - docker_install_compose: false
+    - pip_install_packages:
+        - name: docker
+        - name: six
+
+  pre_tasks:
+    - name: Update packages cache.
+      import_tasks: "../../../../common/pre_tasks.yml"
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+
   tasks:
     - name: "Include loki-docker-plugin"
       include_role:
         name: "loki-docker-plugin"
+      vars:
+        loki_url: "http://loki:3100"

@@ -11,7 +11,14 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup
     privileged: true
     pre_build_image: true
+    networks:
+      - name: loki-plugin-test
 provisioner:
   name: ansible
+  playbooks:
+    prepare: prepare.yml
+    cleanup: cleanup.yml
+  env:
+    ANSIBLE_ROLES_PATH: ../../../roles
 verifier:
   name: ansible

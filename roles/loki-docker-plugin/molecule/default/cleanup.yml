@@ -1,0 +1,13 @@
+---
+- name: Remove additional docker containers,
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - community.docker
+  tasks:
+    - name: Destroy loki container.
+      docker_container:
+        name: "loki"
+        state: absent
+        keep_volumes: false
