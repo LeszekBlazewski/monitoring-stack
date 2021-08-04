@@ -1,0 +1,12 @@
+---
+route:
+  receiver: "slack"
+
+receivers:
+  - name: "slack"
+    slack_configs:
+      - send_resolved: true
+        text: '{{ .CommonAnnotations.description }}'
+        username: "{{ slack_bot_user_name }}"
+        channel: "{{ slack_channel }}"
+        api_url: "{{ slack_api_url }}"

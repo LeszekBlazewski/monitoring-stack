@@ -1,2 +1,6 @@
 ---
 # defaults file for central-node
+reverse_proxy_setup: true
+slack_bot_user_name: "Prometheus"
+slack_channel: ""
+slack_api_url: ""

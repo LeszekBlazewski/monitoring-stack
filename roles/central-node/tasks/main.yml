@@ -1,2 +1,36 @@
 ---
 # tasks file for central-node
+- name: Ensure monitoring directory exists.
+  file:
+    path: ansible_env.HOME/monitoring-stack/docker
+    state: directory
+    mode: 0664
+    recurse: yes
+
+- name: Sync monitoring services configs.
+  synchronize:
+    src: docker
+    dest: ansible_env.HOME/monitoring-stack/docker
+    rsync_opts:
+      - "--exclude=docker-compose.yml"
+
+- name: Copy alertmanager template.
+  template:
+    src: alertmanager.yml.j2
+    dest: ansible_env.HOME/monitoring-stack/docker/alertmanager/alertmanager.yml
+    mode: 0644
+  when: reverse_proxy_setup or true
+
+- name: Copy dns docker-compose template.
+  template:
+    src: docker-compose-dns.yml.j2
+    dest: ansible_env.HOME/monitoring-stack/docker/docker-compose.yml
+    mode: 0644
+  when: reverse_proxy_setup
+
+- name: Copy ip (ports) docker-compose template.
+  template:
+    src: docker-compose-ip.yml.j2
+    dest: ansible_env.HOME/monitoring-stack/docker/docker-compose.yml
+    mode: 0644
+  when: not reverse_proxy_setup

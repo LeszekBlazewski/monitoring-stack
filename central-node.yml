@@ -17,6 +17,6 @@
         name: loki-docker-plugin
       when: gather_logs_on_node
 
-    - name: Provision monitoring services.
+    - name: Provision central monitoring services.
       import_role:
         name: central-node

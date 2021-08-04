@@ -1,25 +1,5 @@
 version: "3.8"
 services:
-  caddy:
-    image: lucaslorentz/caddy-docker-proxy
-    ports:
-      - 9090:9090
-      - 9091:9091
-      - 9093:9093
-      - 3000:3000
-    networks:
-      - caddy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./caddy/Caddyfile:/Caddyfile
-      - caddy_data:/data
-    environment:
-      - CADDY_DOCKER_CADDYFILE_PATH=/Caddyfile
-      - CADDY_INGRESS_NETWORKS=caddy
-    restart: unless-stopped
-    labels:
-      org.label-schema.group: "monitoring"
-
   prometheus:
     image: prom/prometheus
     volumes:
@@ -31,11 +11,9 @@ services:
       - "--storage.tsdb.retention.time=200h"
       - "--web.enable-lifecycle"
     restart: unless-stopped
-    networks:
-      - caddy
+    ports:
+      - 9090:9090
     labels:
-      caddy: {{ inventory_hostname }}:9090
-      caddy.reverse_proxy: '{{upstreams 9090}}'
       org.label-schema.group: "monitoring"
 
   alertmanager:
@@ -43,21 +21,17 @@ services:
     volumes:
       - ./alertmanager:/etc/alertmanager
     restart: unless-stopped
-    networks:
-      - caddy
+    ports:
+      - 9093:9093
     labels:
-      caddy: {{ inventory_hostname }}:9093
-      caddy.reverse_proxy: '{{upstreams 9093}}'
       org.label-schema.group: "monitoring"
 
   pushgateway:
     image: prom/pushgateway
     restart: unless-stopped
-    networks:
-      - caddy
+    ports:
+      - 9091:9091
     labels:
-      caddy: {{ inventory_hostname }}:9091
-      caddy.reverse_proxy: '{{upstreams 9091}}'
       org.label-schema.group: "monitoring"
 
   nodeexporter:
@@ -68,8 +42,6 @@ services:
       - "--path.rootfs=/rootfs"
       - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     restart: unless-stopped
-    networks:
-      - caddy
     labels:
       org.label-schema.group: "monitoring"
 
@@ -85,8 +57,6 @@ services:
     devices:
       - /dev/kmsg
     restart: unless-stopped
-    networks:
-      - caddy
     labels:
       org.label-schema.group: "monitoring"
 
@@ -101,11 +71,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
     restart: unless-stopped
-    networks:
-      - caddy
+    ports:
+      - 3000:3000
     labels:
-      caddy: {{ inventory_hostname }}:3000
-      caddy.reverse_proxy: '{{upstreams 3000}}'
       org.label-schema.group: "monitoring"
 
   loki:
@@ -113,16 +81,10 @@ services:
     volumes:
       - ./loki/config.yml:/etc/loki/local-config.yaml
     restart: unless-stopped
-    networks:
-      - caddy
+    ports:
+      - 3100:3100
     labels:
-      caddy: {{ inventory_hostname }}:3100
-      caddy.reverse_proxy: '{{upstreams 3100}}'
       org.label-schema.group: "monitoring"
-
-networks:
-  caddy:
-    name: caddy
 
 volumes:
   caddy_data:
