@@ -5,6 +5,9 @@
   hosts: all
   gather_facts: false
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+    - name: Example assertion
+      assert:
+        that: true
+# here verify following things
+# 1. all the services are in running state
+# 2. services are available on preconfigured urls/ports

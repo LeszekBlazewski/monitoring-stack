@@ -5,8 +5,8 @@ route:
 receivers:
   - name: "slack"
     slack_configs:
-      - send_resolved: true
-        text: '{{ .CommonAnnotations.description }}'
-        username: "{{ slack_bot_user_name }}"
-        channel: "{{ slack_channel }}"
-        api_url: "{{ slack_api_url }}"
+      - send_resolved: "{{ slack_config.send_resolved_alerts }}"
+        text: "{{ slack_config.alert_text }}"
+        username: "{{ slack_config.bot_name }}"
+        channel: "{{ slack_config.channel }}"
+        api_url: "{{ slack_config.api_url }}"

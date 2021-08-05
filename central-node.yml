@@ -20,3 +20,5 @@
     - name: Provision central monitoring services.
       import_role:
         name: central-node
+      become: yes
+      become_user: "{{ ansible_user }}"

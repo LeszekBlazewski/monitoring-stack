@@ -32,7 +32,7 @@ services:
     networks:
       - caddy
     labels:
-      caddy: prometheus.{{ inventory_hostname }}
+      caddy: {{ services_endopoints.prometheus }}
       caddy.reverse_proxy: '{{upstreams 9090}}'
       org.label-schema.group: "monitoring"
 
@@ -44,7 +44,7 @@ services:
     networks:
       - caddy
     labels:
-      caddy: alertmanager.{{ inventory_hostname }}
+      caddy: {{ services_endopoints.alertmanager }}
       caddy.reverse_proxy: '{{upstreams 9093}}'
       org.label-schema.group: "monitoring"
 
@@ -54,7 +54,7 @@ services:
     networks:
       - caddy
     labels:
-      caddy: pushgateway.{{ inventory_hostname }}
+      caddy: {{ services_endopoints.pushgateway }}
       caddy.reverse_proxy: '{{upstreams 9091}}'
       org.label-schema.group: "monitoring"
 
@@ -102,7 +102,7 @@ services:
     networks:
       - caddy
     labels:
-      caddy: grafana.{{ inventory_hostname }}
+      caddy: {{ services_endopoints.grafana }}
       caddy.reverse_proxy: '{{upstreams 3000}}'
       org.label-schema.group: "monitoring"
 
@@ -114,7 +114,7 @@ services:
     networks:
       - caddy
     labels:
-      caddy: loki.{{ inventory_hostname }}
+      caddy: {{ services_endopoints.loki }}
       caddy.reverse_proxy: '{{upstreams 3100}}'
       org.label-schema.group: "monitoring"
 

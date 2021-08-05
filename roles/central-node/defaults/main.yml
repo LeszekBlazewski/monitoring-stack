@@ -1,6 +1,31 @@
 ---
 # defaults file for central-node
+target_directory: "{{ ansible_env.HOME }}/monitoring-stack"
 reverse_proxy_setup: true
-slack_bot_user_name: "Prometheus"
-slack_channel: ""
-slack_api_url: ""
+
+services_endopoints:
+  prometheus: "{{ (reverse_proxy_setup == true) | ternary('prometheus.' + inventory_hostname, 9090) }}"
+  alertmanager: "{{ (reverse_proxy_setup == true) | ternary('alertmanager.' + inventory_hostname, 9093) }}"
+  pushgateway: "{{ (reverse_proxy_setup == true) | ternary('pushgateway.' + inventory_hostname, 9091) }}"
+  grafana: "{{ (reverse_proxy_setup == true) | ternary('grafana.' + inventory_hostname, 3000) }}"
+  loki: "{{ (reverse_proxy_setup == true) | ternary('loki.' + inventory_hostname, 3100) }}"
+
+# if the above does not work then go for
+
+# services_endopoints:
+#   prometheus: "prometheus.{{inventory_hostname}}"
+#...
+
+# services_ports:
+#   prometheus: "9090"
+#...
+
+# use each dictionary accordingly in .j2 templates
+
+# alertmanager config
+slack_config:
+  send_resolved_alerts: true
+  alert_text: "{{ .CommonAnnotations.description }}"
+  bot_name: "Prometheus"
+  channel:
+  api_url:
