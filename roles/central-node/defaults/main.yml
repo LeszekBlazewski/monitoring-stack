@@ -23,9 +23,10 @@ services_endopoints:
 # use each dictionary accordingly in .j2 templates
 
 # alertmanager config
+slack_api_url: "https://hooks.slack.com/services/<webhook-id>"
 slack_config:
   send_resolved_alerts: true
-  alert_text: "{{ .CommonAnnotations.description }}"
+  alert_text: "{% raw %}{{ .CommonAnnotations.description }}{% endraw %}"
   bot_name: "Prometheus"
-  channel:
-  api_url:
+  channel: "#alerts"
+  api_url: "{{ slack_api_url }}"

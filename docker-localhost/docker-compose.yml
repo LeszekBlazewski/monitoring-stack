@@ -111,6 +111,7 @@ services:
   loki:
     image: grafana/loki
     volumes:
+      - loki_data:/loki
       - ./loki/config.yml:/etc/loki/local-config.yaml
     restart: unless-stopped
     networks:

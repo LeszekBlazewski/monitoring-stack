@@ -33,7 +33,8 @@ services:
       - caddy
     labels:
       caddy: {{ services_endopoints.prometheus }}
-      caddy.reverse_proxy: '{{upstreams 9090}}'
+      caddy.reverse_proxy: "{% raw %}{{upstreams 9090}}{% endraw %}"
+
       org.label-schema.group: "monitoring"
 
   alertmanager:
@@ -45,7 +46,8 @@ services:
       - caddy
     labels:
       caddy: {{ services_endopoints.alertmanager }}
-      caddy.reverse_proxy: '{{upstreams 9093}}'
+      caddy.reverse_proxy: "{% raw %}{{upstreams 9093}}{% endraw %}"
+
       org.label-schema.group: "monitoring"
 
   pushgateway:
@@ -55,7 +57,8 @@ services:
       - caddy
     labels:
       caddy: {{ services_endopoints.pushgateway }}
-      caddy.reverse_proxy: '{{upstreams 9091}}'
+      caddy.reverse_proxy: "{% raw %}{{upstreams 9091}}{% endraw %}"
+
       org.label-schema.group: "monitoring"
 
   nodeexporter:
@@ -103,19 +106,22 @@ services:
       - caddy
     labels:
       caddy: {{ services_endopoints.grafana }}
-      caddy.reverse_proxy: '{{upstreams 3000}}'
+      caddy.reverse_proxy: "{% raw %}{{upstreams 3000}}{% endraw %}"
+
       org.label-schema.group: "monitoring"
 
   loki:
     image: grafana/loki
     volumes:
+      - loki_data:/loki
       - ./loki/config.yml:/etc/loki/local-config.yaml
     restart: unless-stopped
     networks:
       - caddy
     labels:
       caddy: {{ services_endopoints.loki }}
-      caddy.reverse_proxy: '{{upstreams 3100}}'
+      caddy.reverse_proxy: "{% raw %}{{upstreams 3100}}{% endraw %}"
+
       org.label-schema.group: "monitoring"
 
 networks:

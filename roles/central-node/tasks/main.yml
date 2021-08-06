@@ -4,32 +4,33 @@
   file:
     path: "{{ target_directory }}"
     state: directory
-    mode: 0664
+    mode: 0755
 
 - name: Sync monitoring services configs.
   synchronize:
-    src: docker
+    src: docker/
     dest: "{{ target_directory }}"
-    rsync_opts:
-      - "--exclude=docker-compose.yml"
+    recursive: yes
+    archive: no
+    checksum: yes
 
 - name: Copy alertmanager template.
   template:
     src: alertmanager.yml.j2
-    dest: ansible_env.HOME/monitoring-stack/alertmanager/alertmanager.yml
+    dest: "{{ target_directory }}/alertmanager/alertmanager.yml"
     mode: 0644
 
 - name: Copy reverse proxy docker-compose template.
   template:
     src: docker-compose-dns.yml.j2
-    dest: ansible_env.HOME/monitoring-stack/docker-compose.yml
+    dest: "{{ target_directory }}/docker-compose.yml"
     mode: 0644
   when: reverse_proxy_setup
 
 - name: Copy ip (ports) docker-compose template.
   template:
     src: docker-compose-ip.yml.j2
-    dest: ansible_env.HOME/monitoring-stack/docker-compose.yml
+    dest: "{{ target_directory }}/docker-compose.yml"
     mode: 0644
   when: not reverse_proxy_setup
 

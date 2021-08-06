@@ -3,11 +3,35 @@
 
 - name: Verify
   hosts: all
-  gather_facts: false
+  gather_facts: true
+  vars_files:
+    - converge-vars.yml
+  vars:
+    verify_endpoints:
+      - "http://localhost:9090/-/healthy"
+      - "http://localhost:9093/api/v2/status"
+      - "http://localhost:9091/api/v1/status"
+      - "http://localhost:3000/api/health"
+      - "http://localhost:3100/ready"
   tasks:
-    - name: Example assertion
+    - name: Get monitoring services status.
+      community.docker.docker_compose:
+        project_src: "{{ target_directory }}"
+      register: compose_status
+      failed_when: compose_status.changed
+
+    - name: Assert that monitoring services are running.
       assert:
-        that: true
-# here verify following things
-# 1. all the services are in running state
-# 2. services are available on preconfigured urls/ports
+        that:
+          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1'] }}.state.running"
+          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1'] }}.state.status == 'running'"
+      loop: "{{ compose_status.services | dict2items }}"
+
+    - name: Check if services are available on configured endpoints.
+      uri:
+        url: "{{ item }}"
+      register: response
+      until: response.status == 200
+      retries: 5
+      delay: 2
+      loop: "{{ verify_endpoints }}"

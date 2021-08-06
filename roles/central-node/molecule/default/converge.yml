@@ -1,6 +1,27 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    - pip_install_packages:
+        - name: docker
+        - name: six
+        - name: docker-compose
+  vars_files:
+    - converge-vars.yml
+
+  pre_tasks:
+    - name: Update packages cache.
+      import_tasks: "../../../../common/pre_tasks.yml"
+
+    - name: Ensure rsync is installed.
+      package:
+        name: rsync
+        state: present
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+
   tasks:
     - name: "Include central-node"
       include_role:

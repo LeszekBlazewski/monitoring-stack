@@ -5,7 +5,7 @@ route:
 receivers:
   - name: "slack"
     slack_configs:
-      - send_resolved: "{{ slack_config.send_resolved_alerts }}"
+      - send_resolved: {{ slack_config.send_resolved_alerts | lower }}
         text: "{{ slack_config.alert_text }}"
         username: "{{ slack_config.bot_name }}"
         channel: "{{ slack_config.channel }}"
