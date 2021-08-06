@@ -10,18 +10,6 @@ services_endopoints:
   grafana: "{{ (reverse_proxy_setup == true) | ternary('grafana.' + inventory_hostname, 3000) }}"
   loki: "{{ (reverse_proxy_setup == true) | ternary('loki.' + inventory_hostname, 3100) }}"
 
-# if the above does not work then go for
-
-# services_endopoints:
-#   prometheus: "prometheus.{{inventory_hostname}}"
-#...
-
-# services_ports:
-#   prometheus: "9090"
-#...
-
-# use each dictionary accordingly in .j2 templates
-
 # alertmanager config
 slack_api_url: "https://hooks.slack.com/services/<webhook-id>"
 slack_config:

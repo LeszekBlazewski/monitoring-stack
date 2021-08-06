@@ -26,11 +26,14 @@ Based on: https://github.com/stefanprodan/dockprom extended with Loki, wrapped w
 
 [X] 4. Write full docker-compose file based on https://github.com/stefanprodan/dockprom (check documentation for upgrades, and how this should be started) + add Loki to the compose file. Everything should be running inside one docker network.
 
-5. Create ansible role (central_node) which will edit necessary configs and start services from docker-compose required to run the monitoring infrastructure. Required services should be exposed to outside via caddy on TLS on different subdomains. Also a parameter should specify whether central node will be used as a worker node (should install loki plugin on it) -> The loki plugin installation can be done as a separate role and then included in central node and worker nodes.
+[x]5. Create ansible role (central_node) which will edit necessary configs and start services from docker-compose required to run the monitoring infrastructure. Required services should be exposed to outside via caddy on TLS on different subdomains. Also a parameter should specify whether central node will be used as a worker node (should install loki plugin on it) -> The loki plugin installation can be done as a separate role and then included in central node and worker nodes.
 
-Current setup for proxy will work only if the ansbile target host has domain setup. What to do if someone does not has a domain and operates only by ip? We switch to ports in docker compose
-
-6. Create ansible role(worker_node) which will edit necessary configs and start services from docker-compose required to expose and ship logs to the worker_node (docker loki plugin, cAdvisor, nodeExporter, caddy). -> only port 80 and 443 should be exposed with caddy, and needed services should be available via paths like /cadvisor /nodeexporter etc. This role if has loki enable should also use variable loki_url to set it inside docker daemon.json. (maybe a check for loki url might be needed, to make sure the central_node is available and listening for logs)
+6. Create ansible role(worker_node) which will edit necessary configs and start services from docker-compose required to expose and ship logs to the centra_node. Here we want also 2 same setups as in central_node:
+   a) reverse_proxy: true -> then we setup caddy reverse proxy and expose via subdomains
+   b) no reverse_proxy -> then we go for the plain IP template
+   Create docker compose with 3/2 services: (caddy for proxy setup),nodeexporter,cadvisor
+   After the containers are sucessfuly launched delegate task to central_node (ansible host passed as argument to role), which will add the necessary 2 scrape endpoints to prometheus config (check for already established modules, if not possible, add to YAML and reload prometheus config)
+   In verify do same verification as in central_node role.
 
 7. Prepare the finall playbook and hosts file with two groups central_node and worker_nodes and specific variables for them(default values specified on roles, specific values in group_vars)
 
