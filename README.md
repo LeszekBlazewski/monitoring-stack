@@ -83,5 +83,3 @@ _Note the comma at the end!_
 ```bash
 ansible all -i 'mycontainer,' -c docker -m ping
 ```
-
-Add basic auth to caddy and remove ports directives and add them to proxy.
