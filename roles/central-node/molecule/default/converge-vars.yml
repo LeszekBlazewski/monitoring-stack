@@ -1,4 +1,4 @@
 ---
 compose_project_dir: "monitoring"
-target_directory: "{{ ansible_env.HOME }}/{{ compose_project_dir }}"
+monitoring_directory: "/{{ compose_project_dir }}"
 reverse_proxy_setup: false

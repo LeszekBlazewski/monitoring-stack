@@ -1,6 +1,6 @@
 ---
 # defaults file for central-node
-target_directory: "{{ ansible_env.HOME }}/monitoring-stack"
+monitoring_directory: "{{ ansible_env.HOME }}/monitoring-stack"
 reverse_proxy_setup: true
 
 services_endopoints:

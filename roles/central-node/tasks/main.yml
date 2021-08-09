@@ -1,15 +1,15 @@
 ---
 # tasks file for central-node
-- name: Ensure {{ target_directory }} directory exists.
+- name: Ensure {{ monitoring_directory }} directory exists.
   file:
-    path: "{{ target_directory }}"
+    path: "{{ monitoring_directory }}"
     state: directory
     mode: 0755
 
 - name: Sync monitoring services configs.
   synchronize:
     src: docker/
-    dest: "{{ target_directory }}"
+    dest: "{{ monitoring_directory }}"
     recursive: yes
     archive: no
     checksum: yes
@@ -17,24 +17,24 @@
 - name: Copy alertmanager template.
   template:
     src: alertmanager.yml.j2
-    dest: "{{ target_directory }}/alertmanager/alertmanager.yml"
+    dest: "{{ monitoring_directory }}/alertmanager/alertmanager.yml"
     mode: 0644
 
 - name: Copy reverse proxy docker-compose template.
   template:
     src: docker-compose-dns.yml.j2
-    dest: "{{ target_directory }}/docker-compose.yml"
+    dest: "{{ monitoring_directory }}/docker-compose.yml"
     mode: 0644
   when: reverse_proxy_setup
 
 - name: Copy ip (ports) docker-compose template.
   template:
     src: docker-compose-ip.yml.j2
-    dest: "{{ target_directory }}/docker-compose.yml"
+    dest: "{{ monitoring_directory }}/docker-compose.yml"
     mode: 0644
   when: not reverse_proxy_setup
 
 - name: Start monitoring services.
   community.docker.docker_compose:
-    project_src: "{{ target_directory }}"
+    project_src: "{{ monitoring_directory }}"
     pull: yes
