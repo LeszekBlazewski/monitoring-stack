@@ -3,28 +3,27 @@
 
 - name: Verify
   hosts: all
-  gather_facts: true
   vars_files:
     - converge-vars.yml
   vars:
     verify_endpoints:
-      - "http://localhost:9090/-/healthy"
-      - "http://localhost:9093/api/v2/status"
-      - "http://localhost:9091/api/v1/status"
-      - "http://localhost:3000/api/health"
-      - "http://localhost:3100/ready"
+      - "http://localhost:9090/-/healthy" # prometheus
+      - "http://localhost:9093/api/v2/status" # alertmanager
+      - "http://localhost:9091/api/v1/status" # pushgateway
+      - "http://localhost:3000/api/health" # grafana
+      - "http://localhost:3100/ready" # loki
   tasks:
     - name: Get monitoring services status.
       community.docker.docker_compose:
-        project_src: "{{ target_directory }}"
+        project_src: "{{ monitoring_directory }}"
       register: compose_status
       failed_when: compose_status.changed
 
     - name: Assert that monitoring services are running.
       assert:
         that:
-          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1'] }}.state.running"
-          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1'] }}.state.status == 'running'"
+          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1']['state']['running'] }} == true"
+          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1']['state']['status'] }} == 'running'"
       loop: "{{ compose_status.services | dict2items }}"
 
     - name: Check if services are available on configured endpoints.
