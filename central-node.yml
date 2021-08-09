@@ -1,5 +1,5 @@
 ---
-- hosts: central_node
+- hosts: central-node
   become: true
 
   pre_tasks:

@@ -39,17 +39,11 @@ Based on: https://github.com/stefanprodan/dockprom extended with Loki, wrapped w
 
 # Test
 
-# Ideas
-
-0. Store credentials in ansible vault
-
 1. Test everything on free AWS infra.
 
-2. After finish, create terraform templates to provision basic ubuntu20.4, debian10 and rocky8 machines where ubuntu20.4 will be the central_node and other workers, which will be provisioned by ansible. + create template for route 53 with adequate DNS records for the machines. Will terragrunt be needed?
+# Ideas
 
-3. Port the stack to kubernetes. Drop ansible and docker-compose and focus on helm charts which will allow replication of same services. What about cluster provisioning? (EKS, also terraform?). What about updates/gitops -> argocd?
-
-4. Add sample rules for logs in loki (send to alertmanager)
+1. Port the stack to kubernetes. Drop ansible and docker-compose and focus on helm charts which will allow replication of same services. What about cluster provisioning? (EKS, also terraform?). What about updates/gitops -> argocd?
 
 ## Docker container running systemd on host systemd version 248+ (for testing ansible roles which modify systemd services)
 
