@@ -1,0 +1,46 @@
+---
+- hosts: exporter-nodes
+  become: true
+
+  pre_tasks:
+    - name: Update packages cache.
+      import_tasks: "common/pre_tasks.yml"
+
+  roles:
+    - geerlingguy.security
+    - geerlingguy.firewall
+    - geerlingguy.docker
+    - loki-docker-plugin
+    - role: exporter-node
+      become: yes
+      become_user: "{{ ansible_user }}"
+
+  tasks:
+    - name: Update exporters endpoints to include ip addresses.
+      set_fact:
+        exporters_endpoints: "{{ exporters_endpoints | combine(full_address, recursive=true) }}"
+      vars:
+        full_address: "{ '{{ item.key }}': '{{ inventory_hostname + ':' + item.value }}' }"
+      loop: "{{ exporters_endpoints | dict2items }}"
+      when: not reverse_proxy_setup
+
+    - name: Configure central node to scrape new exporter node.
+      blockinfile:
+        path: "{{ hostvars['central-node']['monitoring_directory'] }}/prometheus/prometheus.yml"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.value }}"
+        insertafter: "scrape_configs:"
+        block: |2
+            - job_name: "{{ item.key }}-{{ inventory_hostname }}"
+              scrape_interval: 5s
+              static_configs:
+                - targets: ["{{ item.value }}"]
+        backup: yes
+      loop: "{{ exporters_endpoints | dict2items }}"
+      delegate_to: central-node
+      notify: Reload prometheus
+
+  handlers:
+    - name: Reload prometheus
+      uri:
+        url: "https://{{ hostvars['central-node']['monitoring_directory'] }}/-/reload" # here we need either FQDN or IP (change this)
+        method: POST

@@ -1,2 +1,3 @@
 ---
 gather_logs_on_node: true
+monitoring_directory: "{{ ansible_env.HOME }}/monitoring-stack"

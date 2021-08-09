@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - caddy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./Caddyfile:/Caddyfile
+      - caddy_data:/data
+    environment:
+      - CADDY_DOCKER_CADDYFILE_PATH=/Caddyfile
+      - CADDY_INGRESS_NETWORKS=caddy
+    restart: unless-stopped
+  
+  nodeexporter:
+    image: prom/node-exporter
+    volumes:
+      - "/:/rootfs:ro,rslave"
+    command:
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: {{ exporters_endpoints.nodeexporter }}
+      caddy.reverse_proxy: "{% raw %}{{upstreams 9100}}{% endraw %}"
+
+      org.label-schema.group: "nodeexporter-{{ inventory_hostname }}"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
+    networks:
+      - caddy
+    labels:
+      caddy: {{ exporters_endpoints.cadvisor }}
+      caddy.reverse_proxy: "{% raw %}{{upstreams 8080}}{% endraw %}"
+      
+      org.label-schema.group: "cadvisor-{{ inventory_hostname }}"
+
+networks:
+  caddy:
+    name: caddy
+
+volumes:
+  caddy_data:

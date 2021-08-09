@@ -1,0 +1,33 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  vars_files:
+    - converge-vars.yml
+  vars:
+    verify_endpoints:
+      - "http://localhost:9100" # nodeexporter
+      - "http://localhost:8080" # cadvisor
+  tasks:
+    - name: Get monitoring services status.
+      community.docker.docker_compose:
+        project_src: "{{ exporters_directory }}"
+      register: compose_status
+      failed_when: compose_status.changed
+
+    - name: Assert that monitoring services are running.
+      assert:
+        that:
+          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1']['state']['running'] }} == true"
+          - "{{ item.value[compose_project_dir + '_' + item.key + '_' + '1']['state']['status'] }} == 'running'"
+      loop: "{{ compose_status.services | dict2items }}"
+
+    - name: Check if services are available on configured endpoints.
+      uri:
+        url: "{{ item }}"
+      register: response
+      until: response.status == 200
+      retries: 5
+      delay: 2
+      loop: "{{ verify_endpoints }}"

@@ -1,0 +1,34 @@
+---
+# tasks file for exporter-node
+- name: Ensure {{ exporters_directory }} directory exists.
+  file:
+    path: "{{ exporters_directory }}"
+    state: directory
+    mode: 0755
+
+- name: Configuration for reverse proxy.
+  block:
+    - name: Copy caddy config.
+      copy:
+        src: Caddyfile
+        dest: "{{ exporters_directory }}/Caddyfile"
+        mode: 0644
+
+    - name: Copy reverse proxy docker-compose-exporters template.
+      template:
+        src: docker-compose-exporters-dns.yml.j2
+        dest: "{{ exporters_directory }}/docker-compose.yml"
+        mode: 0644
+  when: reverse_proxy_setup
+
+- name: Copy ip (ports) docker-compose-exporters template.
+  template:
+    src: docker-compose-exporters-ip.yml.j2
+    dest: "{{ exporters_directory }}/docker-compose.yml"
+    mode: 0644
+  when: not reverse_proxy_setup
+
+- name: Start exporters services.
+  community.docker.docker_compose:
+    project_src: "{{ exporters_directory }}"
+    pull: yes

@@ -1,0 +1,8 @@
+---
+# defaults file for exporter-node
+exporters_directory: "{{ ansible_env.HOME }}/exporters"
+reverse_proxy_setup: true
+
+exporters_endpoints:
+  nodeexporter: "{{ (reverse_proxy_setup == true) | ternary('nodeexporter.' + inventory_hostname, 9100) }}"
+  cadvisor: "{{ (reverse_proxy_setup == true) | ternary('cadvisor.' + inventory_hostname, 8080) }}"

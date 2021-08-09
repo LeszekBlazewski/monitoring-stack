@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  nodeexporter:
+    image: prom/node-exporter
+    volumes:
+      - "/:/rootfs:ro,rslave"
+    ports:
+      - {{ exporters_endpoints.nodeexporter }}:9100
+    command:
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    restart: unless-stopped
+    labels:
+      org.label-schema.group: "nodeexporter-{{ inventory_hostname }}"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - {{ exporters_endpoints.cadvisor }}:8080
+    privileged: true
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
+    labels:
+      org.label-schema.group: "cadvisor-{{ inventory_hostname }}"
+
+volumes:
+  caddy_data:
