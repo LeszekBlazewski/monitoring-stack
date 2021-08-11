@@ -30,7 +30,7 @@ services:
       caddy: {{ exporters_endpoints.nodeexporter }}
       caddy.reverse_proxy: "{% raw %}{{upstreams 9100}}{% endraw %}"
 
-      org.label-schema.group: "nodeexporter-{{ inventory_hostname }}"
+      org.label-schema.group: "exporters-{{ ansible_hostname }}"
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor
@@ -50,7 +50,7 @@ services:
       caddy: {{ exporters_endpoints.cadvisor }}
       caddy.reverse_proxy: "{% raw %}{{upstreams 8080}}{% endraw %}"
       
-      org.label-schema.group: "cadvisor-{{ inventory_hostname }}"
+      org.label-schema.group: "exporters-{{ ansible_hostname }}"
 
 networks:
   caddy:

@@ -11,7 +11,7 @@ services:
       - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     restart: unless-stopped
     labels:
-      org.label-schema.group: "nodeexporter-{{ inventory_hostname }}"
+      org.label-schema.group: "exporters-{{ ansible_hostname }}"
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor
@@ -28,7 +28,7 @@ services:
       - /dev/kmsg
     restart: unless-stopped
     labels:
-      org.label-schema.group: "cadvisor-{{ inventory_hostname }}"
+      org.label-schema.group: "exporters-{{ ansible_hostname }}"
 
 volumes:
   caddy_data:
