@@ -1,9 +1,10 @@
 ---
 # defaults file for loki-docker-plugin
+skip_loki_url_verification: false
 daemon_options:
   log-driver: "loki"
   log-opts:
-    loki-url: "{{ loki_url }}"
+    loki-url: "{{ loki_url }}/loki/api/v1/push"
     loki-batch-size: "400"
     mode: "non-blocking"
     max-buffer-size: "4m"

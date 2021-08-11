@@ -15,6 +15,7 @@
   until: response.status == 200 and 'ready' in response.content
   retries: 10
   delay: 10
+  when: not skip_loki_url_verification
 
 - name: Create docker daemon config.
   copy:
