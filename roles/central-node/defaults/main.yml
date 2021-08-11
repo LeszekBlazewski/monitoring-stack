@@ -4,11 +4,11 @@ monitoring_directory: "{{ ansible_env.HOME }}/monitoring-stack"
 reverse_proxy_setup: true
 
 services_endopoints:
-  prometheus: "{{ (reverse_proxy_setup == true) | ternary('prometheus.' + inventory_hostname, 9090) }}"
-  alertmanager: "{{ (reverse_proxy_setup == true) | ternary('alertmanager.' + inventory_hostname, 9093) }}"
-  pushgateway: "{{ (reverse_proxy_setup == true) | ternary('pushgateway.' + inventory_hostname, 9091) }}"
-  grafana: "{{ (reverse_proxy_setup == true) | ternary('grafana.' + inventory_hostname, 3000) }}"
-  loki: "{{ (reverse_proxy_setup == true) | ternary('loki.' + inventory_hostname, 3100) }}"
+  prometheus: "{{ (reverse_proxy_setup == true) | ternary('prometheus.' + ansible_host, 9090) }}"
+  alertmanager: "{{ (reverse_proxy_setup == true) | ternary('alertmanager.' + ansible_host, 9093) }}"
+  pushgateway: "{{ (reverse_proxy_setup == true) | ternary('pushgateway.' + ansible_host, 9091) }}"
+  grafana: "{{ (reverse_proxy_setup == true) | ternary('grafana.' + ansible_host, 3000) }}"
+  loki: "{{ (reverse_proxy_setup == true) | ternary('loki.' + ansible_host, 3100) }}"
 
 # alertmanager config
 slack_api_url: "https://hooks.slack.com/services/<webhook-id>"

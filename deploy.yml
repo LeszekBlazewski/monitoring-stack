@@ -29,7 +29,7 @@
         marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.value }}"
         insertafter: "scrape_configs:"
         block: |2
-            - job_name: "{{ item.key }}-{{ ansible_host | default(inventory_hostname) }}"
+            - job_name: "{{ item.key }}-{{ ansible_host }}"
               scrape_interval: 5s
               static_configs:
                 - targets: ["{{ item.value }}"]
@@ -42,4 +42,5 @@
     - name: Reload prometheus
       uri:
         url: "http://{{ prometheus_address | default(hostvars.central_node.services_endopoints.prometheus) }}/-/reload"
+        follow_redirects: all
         method: POST
