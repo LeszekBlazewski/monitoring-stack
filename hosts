@@ -1,7 +1,4 @@
-central-node ansible_host=1.2.3.4
+central_node ansible_host= ansible_user=ubuntu
 
-[exporter-nodes]
-exporter-node_1
-exporter-node_2
-
-security_ubuntu ansible_host=ip ansible_user=ubuntu
+[exporter_nodes]
+exporter_node_1 ansible_host= ansible_user=ubuntu

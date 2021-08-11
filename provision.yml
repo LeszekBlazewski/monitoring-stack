@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Update packages cache.
+      import_tasks: "common/pre_tasks.yml"
+
+  roles:
+    - geerlingguy.security
+    - geerlingguy.firewall
+    - geerlingguy.docker
+    - geerlingguy.pip
+    - loki-docker-plugin

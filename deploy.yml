@@ -1,0 +1,45 @@
+---
+- hosts: central_node
+
+  roles:
+    - central-node
+
+- hosts: exporter_nodes
+
+  roles:
+    - exporter-node
+
+  tasks:
+    - name: Update exporters endpoints to include ip addresses.
+      set_fact:
+        exporters_endpoints: "{{ exporters_endpoints | combine(full_address, recursive=true) }}"
+      vars:
+        full_address: "{ '{{ item.key }}': '{{ ansible_host }}:{{ item.value }}' }"
+      loop: "{{ exporters_endpoints | dict2items }}"
+      when: not reverse_proxy_setup
+
+    - name: Update prometheus address to include ip address.
+      set_fact:
+        prometheus_address: "{{ hostvars.central_node.ansible_host }}:{{ hostvars.central_node.services_endopoints.prometheus }}"
+      when: not hostvars.central_node.reverse_proxy_setup
+
+    - name: Configure central node to scrape new exporter node.
+      blockinfile:
+        path: "{{ hostvars.central_node.monitoring_directory }}/prometheus/prometheus.yml"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.value }}"
+        insertafter: "scrape_configs:"
+        block: |2
+            - job_name: "{{ item.key }}-{{ ansible_host | default(inventory_hostname) }}"
+              scrape_interval: 5s
+              static_configs:
+                - targets: ["{{ item.value }}"]
+        backup: yes
+      loop: "{{ exporters_endpoints | dict2items }}"
+      delegate_to: central_node
+      notify: Reload prometheus
+
+  handlers:
+    - name: Reload prometheus
+      uri:
+        url: "http://{{ prometheus_address | default(hostvars.central_node.services_endopoints.prometheus) }}/-/reload"
+        method: POST
