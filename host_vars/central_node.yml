@@ -20,4 +20,4 @@ services_endopoints:
 
 # loki-docker-plugin variables
 skip_loki_url_verification: true
-loki_url: "http://{{ ansible_host }}:3100"
+loki_url: "http://{{ ansible_host }}:{{ services_endopoints.loki }}"

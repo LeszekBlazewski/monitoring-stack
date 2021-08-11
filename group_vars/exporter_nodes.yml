@@ -7,7 +7,7 @@ firewall_allowed_tcp_ports:
 
 # loki-docker-plugin variables
 skip_loki_url_verification: true
-loki_url: "http://{{ hostvars['central_node']['ansible_host'] }}:3100"
+loki_url: "{{ hostvars['central_node']['loki_url'] }}"
 
 # exporter-node role variables
 reverse_proxy_setup: false
