@@ -1,5 +1,0 @@
----
-reverse_proxy_setup: false
-exporters_endpoints:
-  nodeexporter: 9100
-  cadvisor: 8080

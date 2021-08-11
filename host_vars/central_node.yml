@@ -1,0 +1,23 @@
+---
+# geerlingguy.firewall roles
+firewall_allowed_tcp_ports:
+  - "22"
+  - "9090"
+  - "9093"
+  - "9091"
+  - "3000"
+  - "3100"
+
+# central-node role variables
+monitoring_directory: "{{ ansible_env.HOME }}/monitoring-stack"
+reverse_proxy_setup: false
+services_endopoints:
+  prometheus: 9090
+  alertmanager: 9093
+  pushgateway: 9091
+  grafana: 3000
+  loki: 3100
+
+# loki-docker-plugin variables
+skip_loki_url_verification: true
+loki_url: "http://{{ ansible_host }}:3100"
