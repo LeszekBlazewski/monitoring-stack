@@ -34,9 +34,6 @@ jobs:
   molecule:
     name: Molecule
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: monitoring-stack/roles/docker-setup
     strategy:
       matrix:
         distro:
