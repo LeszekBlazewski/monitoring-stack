@@ -53,6 +53,12 @@ jobs:
       - name: Install test dependencies.
         run: pip3 install ansible molecule[docker] docker
 
+      - name: Force GitHub Actions' docker daemon to use vfs.
+        run: |
+          sudo systemctl stop docker
+          echo '{"cgroup-parent":"/actions_job","storage-driver":"vfs"}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl start docker
+
       - name: Discover roles to test.
         id: roles-discovery
         run: "echo ::set-output name=ROLELIST::$(ls roles)"
