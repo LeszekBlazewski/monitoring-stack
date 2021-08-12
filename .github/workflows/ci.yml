@@ -55,7 +55,13 @@ jobs:
 
       - name: Discover roles to test.
         id: roles-discovery
-        run: echo "::set-output name=ROLELIST::$(find roles/ -mindepth 1 -maxdepth 1 -print)"
+        run: |
+          roles_to_test=$(find roles/ -mindepth 1 -maxdepth 1 -print)
+          # escape necessary characters
+          roles_to_test="${roles_to_test//'%'/'%25'}"
+          roles_to_test="${roles_to_test//$'\n'/'%0A'}"
+          roles_to_test="${roles_to_test//$'\r'/'%0D'}"
+          echo "::set-output name=ROLELIST::$roles_to_test"
 
       - name: Install roles from requirements.
         run: ansible-galaxy install -r requirements.yml
