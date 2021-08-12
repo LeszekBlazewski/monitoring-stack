@@ -57,7 +57,10 @@ jobs:
         id: roles-discovery
         run: echo "::set-output name=ROLELIST::$(find roles/ -mindepth 1 -maxdepth 1 -print)"
 
-      - name: Run Molecule tests for each role.
+      - name: Install roles from requirements.
+        run: ansible-galaxy install -r requirements.yml
+
+      - name: Run Molecule tests for each own written role.
         run: |
           for role_dir in ${{ steps.roles-discovery.outputs.ROLELIST }}; do
             (cd "$role_dir" && molecule test)
