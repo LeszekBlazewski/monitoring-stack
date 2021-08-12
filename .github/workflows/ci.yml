@@ -62,7 +62,7 @@ jobs:
 
       - name: Run Molecule tests for each own written role.
         run: |
-          for role_dir in ${{ steps.roles-discovery.outputs.ROLELIST }}; do
+          for role_dir in "${{ steps.roles-discovery.outputs.ROLELIST }}"; do
             (cd "$role_dir" && molecule test)
           done
         env:
