@@ -63,7 +63,7 @@ jobs:
       - name: Run Molecule tests for each own written role.
         run: |
           for role_name in ${{ steps.roles-discovery.outputs.ROLELIST }}; do
-            (cd "roles/$role_name" && molecule test)
+            (cd "roles/$role_name" && molecule --debug -v test)
           done
         env:
           PY_COLORS: "1"
