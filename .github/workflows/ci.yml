@@ -59,8 +59,8 @@ jobs:
 
       - name: Run Molecule tests for each role.
         run: |
-          for role-dir in ${{ steps.roles-discovery.outputs.ROLELIST }}; do
-            (cd "$role-dir" && molecule test)
+          for role_dir in ${{ steps.roles-discovery.outputs.ROLELIST }}; do
+            (cd "$role_dir" && molecule test)
           done
         env:
           PY_COLORS: "1"
