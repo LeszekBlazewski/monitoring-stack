@@ -10,7 +10,7 @@
     default_role_daemon_options:
       log-driver: "loki"
       log-opts:
-        loki-url: "{{ loki_url }}"
+        loki-url: "{{ loki_url }}/loki/api/v1/push"
         loki-batch-size: "400"
         mode: "non-blocking"
         max-buffer-size: "4m"
@@ -33,7 +33,7 @@
     - name: Validate docker daemon config.
       assert:
         that:
-          - "{{ docker_config.content|b64decode|from_json }} == {{ default_role_daemon_options }}"
+          - " docker_config.content|b64decode|from_json == default_role_daemon_options"
 
     - name: Check if loki plugin is installed.
       docker_plugin:

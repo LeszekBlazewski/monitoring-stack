@@ -1,4 +1,4 @@
 ---
 compose_project_dir: "exporters"
 exporters_directory: "/{{ compose_project_dir }}"
-reverse_proxy_setup: true
+reverse_proxy_setup: false
